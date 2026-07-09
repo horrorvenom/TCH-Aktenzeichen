@@ -473,7 +473,8 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     renderStamp(inserted);
     document.getElementById('kunde').value = '';
     document.getElementById('fahrzeug').value = '';
-    // Liste aktualisiert sich über die Realtime-Subscription
+    // Liste sofort neu laden (nicht nur auf Realtime verlassen)
+    await loadAll();
   } finally {
     btn.disabled = false;
   }
