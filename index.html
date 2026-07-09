@@ -333,7 +333,7 @@
 const SUPABASE_URL = 'https://rbnrppheuvbmnlidcmei.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_7A48mPikMbsGVrJOWJr98g_g2AtN1pF';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let localCache = [];
 
@@ -352,7 +352,7 @@ function setStatus(state, text){
 }
 
 async function loadAll(){
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('gutachten_register')
     .select('*')
     .order('created_at', { ascending: false });
@@ -428,7 +428,7 @@ window.copyAZ = function(az){
 };
 
 window.deleteEntry = async function(id){
-  const { error } = await supabase.from('gutachten_register').delete().eq('id', id);
+  const { error } = await sb.from('gutachten_register').delete().eq('id', id);
   if(error){
     alert('Löschen fehlgeschlagen: ' + error.message);
     return;
@@ -443,7 +443,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
   btn.disabled = true;
   try{
     const dk = todayKey();
-    const { data: nextNum, error: rpcError } = await supabase
+    const { data: nextNum, error: rpcError } = await sb
       .rpc('increment_gutachten_counter', { p_datum: dk });
 
     if(rpcError){
@@ -459,7 +459,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
       fahrzeug: document.getElementById('fahrzeug').value.trim()
     };
 
-    const { data: inserted, error: insertError } = await supabase
+    const { data: inserted, error: insertError } = await sb
       .from('gutachten_register')
       .insert(entry)
       .select()
@@ -482,7 +482,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
 document.getElementById('searchBox').addEventListener('input', renderTable);
 
 // ---- Realtime: alle Kollegen sehen neue Einträge sofort ----
-supabase
+sb
   .channel('gutachten_register_changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'gutachten_register' }, () => {
     loadAll();
